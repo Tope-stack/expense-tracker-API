@@ -1,6 +1,6 @@
-# expense-tracker-API
+# Expense Tracker API
 
-A Expense Tracker asp.net WEB API Application
+An Expense Tracker asp.net WEB API Application
 
 ## Developed With
 
@@ -10,11 +10,11 @@ A Expense Tracker asp.net WEB API Application
 
 ## Routes
 
-| Routes 
-| [GET]
-| [GET]
-| [POST]
-| [POST]
-| [DELETE]
-|
-|
+| Routes                                     | Description              |
+| ------------------------------------------ |------------------------- | 
+| [GET]                                      |                          |  
+| [GET]                                      |                          |
+| [POST]                                     |                          |                                      
+| [POST]                                     |                          |
+| [DELETE]                                   |                          |
+

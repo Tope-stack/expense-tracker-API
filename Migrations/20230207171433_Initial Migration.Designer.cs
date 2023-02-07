@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExpenseTracker.Migrations
 {
     [DbContext(typeof(ExpenseTrackerDbContext))]
-    [Migration("20230205204818_Initial Database")]
-    partial class InitialDatabase
+    [Migration("20230207171433_Initial Migration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,26 +25,22 @@ namespace ExpenseTracker.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ExpenseTracker.Models.Expense", b =>
+            modelBuilder.Entity("ExpenseTracker.Models.Domain.Expense", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Amount")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DateAdded")
+                    b.Property<DateTime>("ExpenseDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
+                    b.Property<string>("MerchantName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

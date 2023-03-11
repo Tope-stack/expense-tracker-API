@@ -1,6 +1,6 @@
 ﻿namespace ExpenseTracker.Models
 {
-    public enum Classification
+    public enum Category
     {
        Personal,
        Business,

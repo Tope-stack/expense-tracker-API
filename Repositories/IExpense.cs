@@ -1,4 +1,5 @@
-﻿using ExpenseTracker.Models.Domain;
+﻿using ExpenseTracker.Models;
+using ExpenseTracker.Models.Domain;
 
 namespace ExpenseTracker.Repositories
 {
@@ -8,6 +9,12 @@ namespace ExpenseTracker.Repositories
         Task<Expense> GetExpense(Guid id);
         Task<Expense> CreateExpense(Expense expense);
         Task<Expense> UpdateExpense(Guid id, Expense expense);
-        Task<Expense> DeleteExpense(Guid id);   
+        Task<Expense> DeleteExpense(Guid id);
+        Task<string> TotalExpense();
+        Task<string> TotalExpenseByCategory(Category category);
+        IEnumerable<object> MonthlyExpenses();
+        IEnumerable<object> DailyExpenses();
+        //IEnumerable<object> WeeklyExpenses();
+
     }
 }

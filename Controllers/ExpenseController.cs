@@ -1,4 +1,5 @@
-﻿using ExpenseTracker.Models.Domain;
+﻿using ExpenseTracker.Models;
+using ExpenseTracker.Models.Domain;
 using ExpenseTracker.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,7 +36,6 @@ namespace ExpenseTracker.Controllers
         }
 
         [HttpPost]
-
         public async Task<IActionResult> CreateExpense([FromBody]Expense expense)
         {
             var newExpense = await _expenseRepository.CreateExpense(expense);
@@ -54,6 +54,7 @@ namespace ExpenseTracker.Controllers
         }
 
         [HttpDelete]
+        [Route("{id:guid}")]
         public async Task<IActionResult> DeleteExpenseById(Guid id)
         {
             var deleteExpense = await _expenseRepository.DeleteExpense(id);
@@ -61,6 +62,38 @@ namespace ExpenseTracker.Controllers
             if (deleteExpense == null) return NotFound("Expense id not found");
 
             return Ok(deleteExpense);
+        }
+
+        [HttpGet]
+        [Route("total-expense")]
+        public async Task<IActionResult> TotalExpense()
+        {
+            var totalExpense = await _expenseRepository.TotalExpense();
+
+            return Ok(totalExpense);
+        }
+
+        [HttpGet]
+        [Route("total-expense/category")]
+        public async Task<IActionResult> TotalExpenseByCategory(Category category)
+        {
+            var expense = await _expenseRepository.TotalExpenseByCategory(category);
+
+            return Ok(expense);
+        }
+
+        [HttpGet]
+        [Route("monthly-expense")]
+        public IEnumerable<object> MonthlyExpenses()
+        {
+            return _expenseRepository.MonthlyExpenses();
+        }
+
+        [HttpGet]
+        [Route("daily-expense")]
+        public IEnumerable<object> DailyExpenses()
+        {
+            return _expenseRepository.DailyExpenses();
         }
     }
 }

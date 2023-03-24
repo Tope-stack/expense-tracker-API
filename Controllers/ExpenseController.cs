@@ -1,6 +1,8 @@
 ﻿using ExpenseTracker.Models;
 using ExpenseTracker.Models.Domain;
+using ExpenseTracker.Models.DTO;
 using ExpenseTracker.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseTracker.Controllers
@@ -9,91 +11,187 @@ namespace ExpenseTracker.Controllers
     [Route("[controller]")]
     public class ExpenseController : Controller
     {
+        protected ResponseDto _response;
         private readonly IExpense _expenseRepository;
 
         public ExpenseController(IExpense expenseRepository)
         {
             _expenseRepository = expenseRepository;
+            this._response = new ResponseDto();
         }
-        
+
+        [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetAllExpensesInDb()
+        public async Task<object> Get()
         {
-            var expenses = await _expenseRepository.GetAllExpenses();
-
-            return Ok(expenses);
+            try
+            {
+                IEnumerable<ExpenseDto> expenseDtos = await _expenseRepository.GetAllExpenses();
+                _response.Result = expenseDtos;
+            } 
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages
+                    = new List<string>() { ex.ToString() };
+            }
+            return _response;
         }
 
+        [Authorize]
         [HttpGet]
         [Route("{id:guid}")]
-        public async Task<IActionResult> GetExpenseById(Guid id)
+        public async Task<object> GetById(Guid id)
         {
-            var existingExpense = await _expenseRepository.GetExpense(id);
-
-            if (existingExpense == null) return NotFound("Expense id not found");
-
-            return Ok(existingExpense);
+            try
+            {
+                ExpenseDto expenseDto = await _expenseRepository.GetExpense(id);
+                _response.Result = expenseDto;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages
+                    = new List<string>() { ex.ToString() };
+            }
+            return _response;
+            
         }
 
+        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> CreateExpense([FromBody]Expense expense)
+        [Route("new-expense")]
+        public async Task<object> Create([FromBody] CreateExpenseDto expense)
         {
-            var newExpense = await _expenseRepository.CreateExpense(expense);
+            try
+            {
+                CreateExpenseDto model = await _expenseRepository.CreateExpense(expense);
+                _response.Result = model;
+            }
+            catch(Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages
+                    = new List<string>() { ex.ToString() };
+            }
+            
 
-            return Ok(newExpense);
+            return _response;
         }
 
+        [Authorize]
         [HttpPut]
-        public async Task<IActionResult> UpdateExpenseById(Guid id, Expense expense)
+        public async Task<object> Update(Guid id, UpdateExpenseDto expense)
         {
-            var updateExpense = await _expenseRepository.UpdateExpense(id, expense);
+            try
+            {
+                UpdateExpenseDto model = await _expenseRepository.UpdateExpense(id, expense);
+                _response.Result = model;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages
+                    = new List<string>() { ex.ToString() };
+            }
 
-            if (updateExpense == null) return NotFound("Expense id not found");
 
-            return Ok(updateExpense);
+            return _response;
+           
         }
 
+        [Authorize]
         [HttpDelete]
         [Route("{id:guid}")]
-        public async Task<IActionResult> DeleteExpenseById(Guid id)
+        public async Task<object> Delete(Guid id)
         {
-            var deleteExpense = await _expenseRepository.DeleteExpense(id);
-
-            if (deleteExpense == null) return NotFound("Expense id not found");
-
-            return Ok(deleteExpense);
+            try
+            {
+               bool isSuccess = await _expenseRepository.DeleteExpense(id);
+                _response.Result = isSuccess;
+            } 
+            catch(Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages
+                    = new List<string>() { ex.ToString() };
+            }
+            return _response;
+           
         }
 
+        [Authorize]
         [HttpGet]
         [Route("total-expense")]
-        public async Task<IActionResult> TotalExpense()
+        public async Task<object> TotalExpense()
         {
-            var totalExpense = await _expenseRepository.TotalExpense();
-
-            return Ok(totalExpense);
+            try
+            {
+                var totalExpense = await _expenseRepository.TotalExpense();
+                _response.Result = totalExpense;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages
+                    = new List<string>() { ex.ToString() };
+            }
+            return _response;
+            
         }
 
+        [Authorize]
         [HttpGet]
         [Route("total-expense/category")]
-        public async Task<IActionResult> TotalExpenseByCategory(Category category)
+        public async Task<object> TotalExpenseByCategory(Category category)
         {
-            var expense = await _expenseRepository.TotalExpenseByCategory(category);
-
-            return Ok(expense);
+            try
+            {
+                var expense = await _expenseRepository.TotalExpenseByCategory(category);
+                _response.Result = expense;
+            }
+            catch(Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages
+                    = new List<string>() { ex.ToString() };
+            }
+            return _response;
         }
 
+        [Authorize]
         [HttpGet]
         [Route("monthly-expense")]
         public IEnumerable<object> MonthlyExpenses()
         {
+             
             return _expenseRepository.MonthlyExpenses();
         }
 
+        [Authorize]
         [HttpGet]
         [Route("daily-expense")]
         public IEnumerable<object> DailyExpenses()
         {
+           
             return _expenseRepository.DailyExpenses();
+            
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("weekly-expense")]
+        public IEnumerable<object> WeeklyExpenses()
+        {
+            return _expenseRepository.WeeklyExpenses();
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("total-expense/year")]
+        public IEnumerable<object> YearlyExpenses()
+        {
+            return _expenseRepository.YearlyEpenses();
         }
     }
 }

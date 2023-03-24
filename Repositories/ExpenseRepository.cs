@@ -1,6 +1,9 @@
-﻿using ExpenseTracker.Data;
+﻿using AutoMapper;
+using ExpenseTracker.Data;
 using ExpenseTracker.Models;
 using ExpenseTracker.Models.Domain;
+using ExpenseTracker.Models.DTO;
+using ExpenseTracker.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseTracker.Repositories
@@ -8,55 +11,60 @@ namespace ExpenseTracker.Repositories
     public class ExpenseRepository : IExpense
     {
         private readonly ExpenseTrackerDbContext _context;
+        private IMapper _mapper;
 
-        public ExpenseRepository(ExpenseTrackerDbContext context)
+        public ExpenseRepository(ExpenseTrackerDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
-        public async Task<IEnumerable<Expense>> GetAllExpenses()
+        public async Task<IEnumerable<ExpenseDto>> GetAllExpenses()
         {
-            return await _context.Expenses.ToListAsync();
-        }
-
-        public async Task<Expense> GetExpense(Guid id)
-        {
-            var existingExpense = await _context.Expenses.FirstOrDefaultAsync(x => x.Id == id);
-
-            return existingExpense == null ? null : existingExpense;
+            IEnumerable<Expense> expenses = await _context.Expenses.ToListAsync();
+            return _mapper.Map<List<ExpenseDto>>(expenses);
+            
         }
 
-        public async Task<Expense> CreateExpense(Expense expense)
+        public async Task<ExpenseDto> GetExpense(Guid id)
         {
-            expense.Id = new Guid();
-            await _context.Expenses.AddAsync(expense);  
+            Expense expense = await _context.Expenses.FirstOrDefaultAsync(x => x.Id == id);
+            return _mapper.Map<ExpenseDto>(expense);
+        }
+
+        public async Task<CreateExpenseDto> CreateExpense(CreateExpenseDto expense)
+        {
+            Expense newExpense = _mapper.Map<CreateExpenseDto, Expense>(expense);
+
+            await _context.AddAsync(newExpense);  
             await _context.SaveChangesAsync();
 
             return expense;
         }
 
-        public async Task<Expense> UpdateExpense(Guid id, Expense expense)
+        public async Task<UpdateExpenseDto> UpdateExpense(Guid id, UpdateExpenseDto expense)
         {
-            var existingExpense =await _context.Expenses.FirstOrDefaultAsync(x => x.Id == id);
+            Expense existingExpense = _mapper.Map<UpdateExpenseDto, Expense>(expense);
 
-            existingExpense.Category = expense.Category;
-            existingExpense.MerchantName = expense.MerchantName;
-            existingExpense.Amount = expense.Amount;
+            if (id != existingExpense.Id)
+            {
+                _context.Expenses.Update(existingExpense);
+            }
 
             await _context.SaveChangesAsync();
 
-            return existingExpense;
+            return _mapper.Map<Expense, UpdateExpenseDto>(existingExpense);
         }
 
-        public async Task<Expense> DeleteExpense(Guid id)
+        public async Task<bool> DeleteExpense(Guid id)
         {
-            var existingExpense = await _context.Expenses.FirstOrDefaultAsync(x => x.Id == id);
+            Expense existingExpense = await _context.Expenses.FirstOrDefaultAsync(x => x.Id == id);
             
-            if (existingExpense == null) return null;
+            if (existingExpense == null) return false;
 
             _context.Expenses.Remove(existingExpense);
             await _context.SaveChangesAsync();
 
-            return existingExpense;
+            return true;
         }
 
         public async Task<string> TotalExpense()
@@ -113,7 +121,6 @@ namespace ExpenseTracker.Repositories
             return monthlyExpense;
         }
 
-
         public IEnumerable<object> DailyExpenses()
         {
             var dailyExpense = _context.Expenses.AsEnumerable()
@@ -130,20 +137,32 @@ namespace ExpenseTracker.Repositories
             return dailyExpense;
         }
 
-        //public IEnumerable<object> WeeklyExpenses()
-        //{
-        //    var weeklyExpense = _context.Expenses.AsEnumerable()
-        //        .OrderBy(x => x.ExpenseDate)
-        //        .GroupBy(j => j.ExpenseDate.StartOfWeek(DayOfWeek.Monday),
-        //        (key, group) => new
-        //        {
-        //            startWeekDate = key.ToString("MM / dd / yyyy"),
-        //            endWeekDate = key.AddDays(7).ToString("MM / dd / yyyy"),
-        //            totalExpense = group.Sum(y => y.Amount)
-        //        }
-        //        );
+        public IEnumerable<object> WeeklyExpenses()
+        {
+            var weeklyExpense = _context.Expenses.AsEnumerable()
+                .OrderBy(x => x.ExpenseDate)
+                .GroupBy(j => j.ExpenseDate.StartOfWeek(DayOfWeek.Monday),
+                (key, group) => new
+                {
+                    startWeekDate = key.ToString("MM / dd / yyyy"),
+                    endWeekDate = key.AddDays(7).ToString("MM / dd / yyyy"),
+                    totalExpense = group.Sum(y => y.Amount)
+                }
+                );
 
-        //    return weeklyExpense;
-        //}
+            return weeklyExpense;
+        }
+
+        public IEnumerable<object> YearlyEpenses()
+        {
+            var yearlyEpenses = _context.Expenses.AsEnumerable()
+                .GroupBy(x => new { Year = x.ExpenseDate.ToString("yyyy"), x.ExpenseDate }, (key, group) => new
+                {
+                    Year = key.Year,
+                    totalExpense = group.Sum(y => y.Amount)
+                });
+            return yearlyEpenses;
+        }
+
     }
 }

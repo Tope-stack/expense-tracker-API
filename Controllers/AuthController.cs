@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExpenseTracker.Controllers
 {
     [ApiController]
-    [Route("api/user-authentication")]
+    [Route("user-authentication")]
     public class AuthController : Controller
     {
         private readonly IUserAuthRepository _userAuthRepository;

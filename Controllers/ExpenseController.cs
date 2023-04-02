@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExpenseTracker.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("expense")]
     public class ExpenseController : Controller
     {
         protected ResponseDto _response;

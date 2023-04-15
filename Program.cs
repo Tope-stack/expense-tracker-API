@@ -95,6 +95,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddScoped<IExpense, ExpenseRepository>();
 builder.Services.AddScoped<IUserAuthRepository, UserAuthRepository>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 var mapperConfig = new MapperConfiguration(map =>
 {

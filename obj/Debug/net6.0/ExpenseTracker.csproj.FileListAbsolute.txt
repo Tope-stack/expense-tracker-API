@@ -169,3 +169,8 @@ C:\Users\USER\Desktop\.NETAPI\ExpenseTracker\bin\Debug\net6.0\Microsoft.AspNetCo
 C:\Users\USER\Desktop\.NETAPI\ExpenseTracker\bin\Debug\net6.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 C:\Users\USER\Desktop\.NETAPI\ExpenseTracker\bin\Debug\net6.0\Microsoft.Extensions.Identity.Core.dll
 C:\Users\USER\Desktop\.NETAPI\ExpenseTracker\bin\Debug\net6.0\Microsoft.Extensions.Identity.Stores.dll
+C:\Users\USER\Desktop\.NETAPI\ExpenseTracker\obj\Debug\net6.0\staticwebassets\msbuild.ExpenseTracker.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\USER\Desktop\.NETAPI\ExpenseTracker\obj\Debug\net6.0\staticwebassets\msbuild.build.ExpenseTracker.props
+C:\Users\USER\Desktop\.NETAPI\ExpenseTracker\obj\Debug\net6.0\staticwebassets\msbuild.buildMultiTargeting.ExpenseTracker.props
+C:\Users\USER\Desktop\.NETAPI\ExpenseTracker\obj\Debug\net6.0\staticwebassets\msbuild.buildTransitive.ExpenseTracker.props
+C:\Users\USER\Desktop\.NETAPI\ExpenseTracker\obj\Debug\net6.0\staticwebassets.pack.json

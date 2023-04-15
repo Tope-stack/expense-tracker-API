@@ -1,5 +1,8 @@
 ﻿using ExpenseTracker.Models.DTO;
 using ExpenseTracker.Repositories;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseTracker.Controllers
@@ -27,6 +30,31 @@ namespace ExpenseTracker.Controllers
         {
             return !await _userAuthRepository.ValidateUserAsync(userLogin)
                 ? Unauthorized() : Ok(new { Token = await _userAuthRepository.CreateTokenAsync() });
+        }
+
+        [HttpPost]
+        [Route("changePassword")]
+        //[AllowAnonymous]
+        //[ProducesResponseType(typeof(AuthResponse), 200)]
+
+        //[ProducesResponseType(typeof(JsonMessage<string>), 200)]
+
+        public async Task<IActionResult> ChangeUserPassword([FromBody] ChangePasswordDTO changePasswordDTO)
+        {
+            var emailClaim = User.Claims.FirstOrDefault(c => c.Type == "email");
+
+            if (emailClaim != null)
+            {
+                string userEmail = emailClaim.Value; 
+            }
+
+            //changePasswordDTO.Email = userEmail;
+
+            
+
+            var result = await _userAuthRepository.ChangeUserPassword(changePasswordDTO);
+
+            return Ok(result);
         }
     }
 }

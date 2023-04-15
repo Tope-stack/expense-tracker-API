@@ -27,6 +27,7 @@ namespace ExpenseTracker.Models.DTO
         public DateTime ExpenseDate { get; set; }
         public string MerchantName { get; set; }
         public int Amount { get; set; }
+        
         public Category Category { get; set; }
     }
 }

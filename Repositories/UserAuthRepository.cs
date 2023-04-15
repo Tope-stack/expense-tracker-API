@@ -16,13 +16,12 @@ namespace ExpenseTracker.Repositories
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private User _user;
-        
+
         public UserAuthRepository(UserManager<User> userManager, IMapper mapper, IConfiguration configuration)
         {
             _userManager = userManager;
             _mapper = mapper;
-            _configuration = configuration; 
-            
+            _configuration = configuration;
         }
 
         public async Task<IdentityResult> RegisterUserAsync(UserRegistrationDto userRegistration)
@@ -38,6 +37,8 @@ namespace ExpenseTracker.Repositories
             var result = _user != null && await _userManager.CheckPasswordAsync(_user, userLogin.Password);
             return result;
         }
+
+
 
         public async Task<string> CreateTokenAsync()
         {
@@ -81,6 +82,37 @@ namespace ExpenseTracker.Repositories
             signingCredentials: signingCredentials
             );
             return tokenOptions;
+        }
+
+        public async Task<string> ChangeUserPassword(ChangePasswordDTO changePassword)
+        {
+            var currentUser = await _userManager.FindByEmailAsync(changePassword.Email);
+
+            //if (currentUser == null)
+            //{
+            //    throw new ArgumentException($" {currentUser} does not exist. ");
+            //}
+
+            var changedPassword = await _userManager.ChangePasswordAsync(currentUser, changePassword.CurrentPassword, changePassword.NewPassword);
+
+            if (changedPassword.Succeeded)
+            {
+                return string.Empty;
+            }
+
+            else
+            {
+                string error = changedPassword.Errors.First().Description;
+
+                if (error == "PasswordMismatch")
+                {
+                    return "Current password is incorrect";
+                }
+                else
+                {
+                    return "We are not able to change your password right now. Please contact admin";
+                }
+            }
         }
     }
 }

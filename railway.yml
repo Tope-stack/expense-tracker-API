@@ -1,0 +1,8 @@
+name: ExpenseTracker
+services:
+  web:
+    dockerfile: Dockerfile
+    buildArgs:
+      ASPNETCORE_ENVIRONMENT: production
+    env:
+      ASPNETCORE_ENVIRONMENT: production

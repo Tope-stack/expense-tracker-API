@@ -84,35 +84,7 @@ namespace ExpenseTracker.Repositories
             return tokenOptions;
         }
 
-        public async Task<string> ChangeUserPassword(ChangePasswordDTO changePassword)
-        {
-            var currentUser = await _userManager.FindByEmailAsync(changePassword.Email);
-
-            //if (currentUser == null)
-            //{
-            //    throw new ArgumentException($" {currentUser} does not exist. ");
-            //}
-
-            var changedPassword = await _userManager.ChangePasswordAsync(currentUser, changePassword.CurrentPassword, changePassword.NewPassword);
-
-            if (changedPassword.Succeeded)
-            {
-                return string.Empty;
-            }
-
-            else
-            {
-                string error = changedPassword.Errors.First().Description;
-
-                if (error == "PasswordMismatch")
-                {
-                    return "Current password is incorrect";
-                }
-                else
-                {
-                    return "We are not able to change your password right now. Please contact admin";
-                }
-            }
-        }
+        
+        
     }
 }
